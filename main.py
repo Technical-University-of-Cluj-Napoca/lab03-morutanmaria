@@ -65,12 +65,28 @@ if __name__ == "__main__":
                     for row in grid.grid:
                         for spot in row:
                             spot.update_neighbors(grid.grid)
-                    # here you can call the algorithms
-                    # bfs(lambda: grid.draw(), grid, start, end)
-                    # dfs(lambda: grid.draw(), grid, start, end)
-                    # astar(lambda: grid.draw(), grid, start, end)
-                    # ... and the others?
                     started = False
+                    # here you can call the algorithms
+                    #bfs
+                if event.key == pygame.K_b and not started:
+                    for row in grid.grid:
+                        for spot in row:
+                            spot.update_neighbors(grid.grid)
+                    bfs(lambda: grid.draw(), grid, start, end)
+                    #dfs
+                if event.key == pygame.K_d and not started:
+                    for row in grid.grid:
+                        for spot in row:
+                            spot.update_neighbors(grid.grid)
+                    dfs(lambda: grid.draw(), grid, start, end)  
+                    #astar 
+                if event.key == pygame.K_a and not started:
+                    for row in grid.grid:
+                        for spot in row:
+                            spot.update_neighbors(grid.grid)
+                    astar(lambda: grid.draw(), grid, start, end)
+                    # ... and the others?
+                   
 
                 if event.key == pygame.K_c:
                     print("Clearing the grid...")
