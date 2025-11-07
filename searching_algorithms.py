@@ -4,6 +4,8 @@ from queue import PriorityQueue
 from grid import Grid
 from spot import Spot
 import math 
+import heapq
+from collections import defaultdict
 
 def bfs(draw: callable, grid: Grid, start: Spot, end: Spot) -> bool:
     queue = deque([start])
@@ -142,6 +144,89 @@ def astar(draw: callable, grid: Grid, start: Spot, end: Spot) -> bool:
 
     return False 
 
+def dls(draw: callable, grid: Grid, start: Spot, end: Spot, limit: int) -> bool:
+    stack = [(start, 0)]
+    visited = {start}
+    came_from = {}
+    while stack: 
+        current_node, depth = stack.pop()
+        if current_node == end:
+            while current_node in came_from:
+                current_node = came_from[current_node]
+                current_node.make_path()
+                draw()
+            end.make_end(), start.make_start()
+            return True
+        if depth < limit:
+            for neighbor in current_node.neighbors:
+                if neighbor not in visited and not neighbor.is_barrier():
+                    visited.add(neighbor)
+                    came_from[neighbor] = current_node
+                    stack.append((neighbor, depth+1))
+                    neighbor.make_open()
+            draw()
+
+        if current_node != start:
+            current_node.make_closed()
+    return False
+
+def ucs(draw: callable, grid: Grid, start: Spot, end: Spot):
+    queue = []
+    heapq.heappush(queue, (0, start))
+    visited = {start : (None, 0)}
+    while queue: 
+        current_cost, current_node = heapq.heappop(queue)
+        if current_node == end:
+            current = end
+            while current != start:
+                parent, _ = visited[current]
+                current = parent
+                current.make_path()
+            end.make_end()
+            start.make_start()
+            return True
+        for neighbor in current_node.neighbors:
+            if neighbor.is_barrier():
+                continue
+            step_cost = 1
+            new_cost = current_cost + step_cost
+            if neighbor not in visited or new_cost < visited[neighbor][1]:
+                visited[neighbor] = (current_node, new_cost)
+                heapq.heappush(queue, (new_cost, neighbor))
+                neighbor.make_open()
+        draw()
+        if current_node != start:
+            current_node.make_closed()
+    return None
+
+def gbfs(draw: callable, grid: Grid, start: Spot, end: Spot, region_map: dict[Spot, Spot]):
+    queue = []
+    heapq.heappush(queue, (h_manhattan_distance(start.get_position(), end.get_position()), start))
+    visited = set([start])
+    came_from = {start: None}
+    while queue:
+        _, current = heapq.heappop(queue)
+        if current == end:
+            while current != start:
+                current = came_from[current]
+                current.make_path()
+            end.make_end()
+            start.make_start()
+            return True
+        for neighbor in current.neighbors:
+            row = neighbor.row
+            col = neighbor.col
+            if region_map.get(neighbor, 0) == 999:
+                continue
+            if neighbor not in visited:
+                visited.add(neighbor)
+                came_from[neighbor] = current
+                heapq.heappush(queue, (h_manhattan_distance(neighbor.get_position(), end.get_position()), neighbor))
+                neighbor.make_open()
+        draw()
+        if current != start:
+            current.make_closed()
+    return None
 # and the others algorithms...
 # ▢ Depth-Limited Search (DLS)
 # ▢ Uninformed Cost Search (UCS)

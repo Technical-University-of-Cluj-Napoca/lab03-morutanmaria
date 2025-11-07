@@ -1,6 +1,8 @@
 from utils import *
 from grid import Grid
+from collections import defaultdict 
 from searching_algorithms import *
+
 
 if __name__ == "__main__":
     # setting up how big will be the display window
@@ -19,6 +21,30 @@ if __name__ == "__main__":
     # flags for running the main loop
     run = True
     started = False
+    # map for gbfs
+    region_map = {
+    (0, 0): 1, (0, 1): 1, (0, 2): 1, (0, 3): 1, (0, 4): 1,
+    (1, 0): 1, (1, 1): 1, (1, 2): 1, (1, 3): 1, (1, 4): 1,
+    (2, 0): 1, (2, 1): 1, (2, 2): 1, (2, 3): 1, (2, 4): 1,
+
+    (3, 0): 3, (3, 1): 3, (3, 2): 3, (3, 3): 3,
+    (4, 0): 3, (4, 1): 3, (4, 2): 3, (4, 3): 3,
+
+    (5, 0): 5, (5, 1): 5, (5, 2): 5, (5, 3): 5,
+    (6, 0): 5, (6, 1): 5, (6, 2): 5, (6, 3): 5,
+
+    (7, 0): 8, (7, 1): 8, (7, 2): 8,
+    (8, 0): 8, (8, 1): 8, (8, 2): 8,
+
+    (3, 5): 12, (4, 5): 12, (5, 5): 12,
+    (3, 6): 12, (4, 6): 12, (5, 6): 12,
+
+    (2, 7): 20, (3, 7): 20, (4, 7): 20,
+    (2, 8): 20, (3, 8): 20, (4, 8): 20,
+
+    (6, 7): 999, (6, 8): 999,
+    (7, 7): 999, (7, 8): 999,
+}
 
     while run:
         grid.draw()  # draw the grid and its spots
@@ -67,26 +93,43 @@ if __name__ == "__main__":
                             spot.update_neighbors(grid.grid)
                     started = False
                     # here you can call the algorithms
-                    #bfs
+                    #bfs key = b
                 if event.key == pygame.K_b and not started:
                     for row in grid.grid:
                         for spot in row:
                             spot.update_neighbors(grid.grid)
                     bfs(lambda: grid.draw(), grid, start, end)
-                    #dfs
+                    #dfs key = d
                 if event.key == pygame.K_d and not started:
                     for row in grid.grid:
                         for spot in row:
                             spot.update_neighbors(grid.grid)
                     dfs(lambda: grid.draw(), grid, start, end)  
-                    #astar 
+                    #astar key = a
                 if event.key == pygame.K_a and not started:
                     for row in grid.grid:
                         for spot in row:
                             spot.update_neighbors(grid.grid)
                     astar(lambda: grid.draw(), grid, start, end)
                     # ... and the others?
-                   
+                    #dls key = l
+                if event.key == pygame.K_l and not started:
+                    for row in grid.grid:
+                        for spot in row:
+                            spot.update_neighbors(grid.grid)
+                    dls(lambda: grid.draw(), grid, start, end, 50)
+                    #ucs key = u
+                if event.key == pygame.K_u and not started:
+                    for row in grid.grid:
+                        for spot in row:
+                            spot.update_neighbors(grid.grid)
+                    ucs(lambda: grid.draw(), grid, start, end) 
+                    #greedy best first search key = g
+                if event.key == pygame.K_g and not started:
+                    for row in grid.grid:
+                        for spot in row:
+                            spot.update_neighbors(grid.grid)
+                    gbfs(lambda: grid.draw(), grid, start, end, region_map) 
 
                 if event.key == pygame.K_c:
                     print("Clearing the grid...")
