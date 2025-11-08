@@ -236,18 +236,15 @@ def iddfs(draw: callable, grid: Grid, start: Spot, end: Spot, max_depth: int) ->
             return True
     return False
 
-def position(Spot):
-    return (Spot.row, Spot.col)
-
 def idastar(draw: callable, grid: Grid, start: Spot, end: Spot) -> bool:
-    threshold = h_manhattan_distance(position(start), position(end))
+    threshold = h_manhattan_distance(start.get_position(), end.get_position())
     while True:
         stack = [(start, 0, {})]
         visited = {start}
         mini = math.inf
         while stack:
             current_node, g, came_from = stack.pop()
-            f = g + h_manhattan_distance(position(current_node), position(end))
+            f = g + h_manhattan_distance(current_node.get_position(), end.get_position())
             if f > threshold:
                 mini = min(mini, f)
                 continue
