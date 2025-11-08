@@ -117,7 +117,7 @@ if __name__ == "__main__":
                     for row in grid.grid:
                         for spot in row:
                             spot.update_neighbors(grid.grid)
-                    dls(lambda: grid.draw(), grid, start, end, 50)
+                    dls(lambda: grid.draw(), grid, start, end, 200)
                     #ucs key = u
                 if event.key == pygame.K_u and not started:
                     for row in grid.grid:
@@ -129,7 +129,19 @@ if __name__ == "__main__":
                     for row in grid.grid:
                         for spot in row:
                             spot.update_neighbors(grid.grid)
-                    gbfs(lambda: grid.draw(), grid, start, end, region_map) 
+                    gbfs(lambda: grid.draw(), grid, start, end, region_map)
+                    #iddfs key = i
+                if event.key == pygame.K_i and not started:
+                    for row in grid.grid:
+                        for spot in row:
+                            spot.update_neighbors(grid.grid)
+                    iddfs(lambda: grid.draw(), grid, start, end, 200) 
+                    #idastar key = s
+                if event.key == pygame.K_s and not started:
+                    for row in grid.grid:
+                        for spot in row:
+                            spot.update_neighbors(grid.grid)
+                    idastar(lambda: grid.draw(), grid, start, end)
 
                 if event.key == pygame.K_c:
                     print("Clearing the grid...")

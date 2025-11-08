@@ -43,7 +43,8 @@ def dfs(draw: callable, grid: Grid, start: Spot, end: Spot) -> bool:
                 current_node = came_from[current_node]
                 current_node.make_path()
                 draw()
-            end.make_end(), start.make_start()
+            end.make_end()
+            start.make_start()
             return True
         for neighbor in current_node.neighbors:
             if neighbor not in visited and not neighbor.is_barrier():
@@ -155,14 +156,15 @@ def dls(draw: callable, grid: Grid, start: Spot, end: Spot, limit: int) -> bool:
                 current_node = came_from[current_node]
                 current_node.make_path()
                 draw()
-            end.make_end(), start.make_start()
+            end.make_end()
+            start.make_start()
             return True
         if depth < limit:
             for neighbor in current_node.neighbors:
                 if neighbor not in visited and not neighbor.is_barrier():
                     visited.add(neighbor)
                     came_from[neighbor] = current_node
-                    stack.append((neighbor, depth+1))
+                    stack.append((neighbor, depth + 1))
                     neighbor.make_open()
             draw()
 
@@ -227,6 +229,52 @@ def gbfs(draw: callable, grid: Grid, start: Spot, end: Spot, region_map: dict[Sp
         if current != start:
             current.make_closed()
     return None
+
+def iddfs(draw: callable, grid: Grid, start: Spot, end: Spot, max_depth: int) -> bool:
+    for depth in range(max_depth + 1):
+        if dls(draw, grid, start, end, depth):
+            return True
+    return False
+
+def position(Spot):
+    return (Spot.row, Spot.col)
+
+def idastar(draw: callable, grid: Grid, start: Spot, end: Spot) -> bool:
+    threshold = h_manhattan_distance(position(start), position(end))
+    while True:
+        stack = [(start, 0, {})]
+        visited = {start}
+        mini = math.inf
+        while stack:
+            current_node, g, came_from = stack.pop()
+            f = g + h_manhattan_distance(position(current_node), position(end))
+            if f > threshold:
+                mini = min(mini, f)
+                continue
+            if current_node == end:
+                while current_node in came_from:
+                    current_node = came_from[current_node]
+                    current_node.make_path()
+                    draw()
+                end.make_end()
+                start.make_start()
+                return True
+            for neighbor in current_node.neighbors:
+                if neighbor.is_barrier():
+                    continue
+                if neighbor not in visited:
+                    visited.add(neighbor)
+                    came_from_copy = came_from.copy()
+                    came_from_copy[neighbor] = current_node
+                    neighbor.make_open()
+                    stack.append((neighbor, g+1, came_from_copy))
+            draw()
+            if current_node != start and current_node != end:
+                current_node.make_closed()
+        if mini == math.inf:
+            return False
+        threshold = mini
+
 # and the others algorithms...
 # ▢ Depth-Limited Search (DLS)
 # ▢ Uninformed Cost Search (UCS)
